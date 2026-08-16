@@ -1,0 +1,1 @@
+(()=>{var o=(window.__PZ_ORIGIN__||(location.protocol+"//"+location.host)).replace(/\/+$/,"");var u=new URL(o);var ws=(u.protocol==="https:"?"wss://":"ws://")+u.host;window._CONFIG={wispurl:localStorage.getItem("proxServer")||ws+"/api/alt-wisp-1/",bareurl:o+"/api/edge/"};})();
