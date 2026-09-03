@@ -3,7 +3,7 @@ const KEYWORDS = [
   "game",
   "proxy",
   "proxies",
-  "petezah",
+  "harriubg",
   "scramjet",
   "ultraviolet",
   "unblocked",

@@ -34,8 +34,8 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
                     setTimeout(() => btn.textContent = 'Copy', 2000);
                 });
 
-                function navigatePete(path) {
-                    if (typeof path !== 'string' || !/^petezah:\\/\\/[a-z0-9][a-z0-9+.-]*(?:[/?#][^\\s]*)?$/i.test(path)) return;
+                function navigateHarriUBG(path) {
+                    if (typeof path !== 'string' || !/^harriubg:\\/\\/[a-z0-9][a-z0-9+.-]*(?:[/?#][^\\s]*)?$/i.test(path)) return;
                     try {
                         if (window.parent && window.parent !== window) {
                             window.parent.postMessage({ source: 'pz-scramjet-error', action: 'navigate', url: path }, '*');
@@ -53,17 +53,17 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
                 const tryVm2 = document.getElementById('tryVm2');
                 const tryFeedback = document.getElementById('tryFeedback');
                 const goHome = document.getElementById('goHome');
-                if (tryVm) tryVm.addEventListener('click', () => navigatePete('petezah://vm'));
-                if (tryVm2) tryVm2.addEventListener('click', () => navigatePete('petezah://vm'));
-                if (tryFeedback) tryFeedback.addEventListener('click', () => navigatePete('petezah://feedback'));
-                if (goHome) goHome.addEventListener('click', () => navigatePete('petezah://newtab'));
+                if (tryVm) tryVm.addEventListener('click', () => navigateHarriUBG('harriubg://vm'));
+                if (tryVm2) tryVm2.addEventListener('click', () => navigateHarriUBG('harriubg://vm'));
+                if (tryFeedback) tryFeedback.addEventListener('click', () => navigateHarriUBG('harriubg://feedback'));
+                if (goHome) goHome.addEventListener('click', () => navigateHarriUBG('harriubg://newtab'));
 
         `;return`<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Error - PeteZah</title>
+    <title>Error - HarriUBG</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -389,7 +389,7 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
         <div class="layout">
             <div class="left">
                 <div class="brand-row">
-                    <img src="/storage/images/logo-png-removebg-preview.png" alt="PeteZah" class="logo">
+                    <img src="/storage/images/logo-png-removebg-preview.png" alt="HarriUBG" class="logo">
                     <div class="brand-meta">
                         <div class="kicker">Scramjet proxy</div>
                         <div class="hint">Site failed to load through the proxy tunnel</div>
