@@ -122,9 +122,15 @@
       if (check) return;
       img.setAttribute("data-harri-fb", "1");
       var src = img.getAttribute("src") || "";
-      if (src.indexOf("/storage/") === 0 || src.indexOf("storage/") === 0) {
+      var cur = "";
+      try { cur = img.currentSrc || ""; } catch (e) {}
+      var combined = (src + " " + cur).toLowerCase();
+      if (combined.indexOf("storage/") !== -1) {
         img.setAttribute("src", "placeholder.svg");
         img.setAttribute("srcset", "");
+        if (img.parentNode && img.parentNode.parentNode) {
+          img.parentNode.classList && img.parentNode.classList.add("has-harri-ph");
+        }
       }
     } catch (e) {}
   }
