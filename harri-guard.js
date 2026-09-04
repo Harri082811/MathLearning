@@ -1,6 +1,31 @@
 (function () {
   "use strict";
 
+  function pzErrorOverlay(msg, stack) {
+    try {
+      var existing = document.getElementById("pz-error-overlay");
+      if (existing) { existing.textContent += "\n\n" + msg; return; }
+      var div = document.createElement("div");
+      div.id = "pz-error-overlay";
+      div.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;padding:16px 20px;max-height:70vh;overflow:auto;background:rgba(180,20,20,0.95);color:#fff;font:12px/1.5 monospace;white-space:pre-wrap;word-break:break-word;border-bottom:2px solid #ff6b6b;pointer-events:auto;";
+      div.appendChild(document.createElement("strong")).textContent = "PZ ERROR";
+      var pre = document.createElement("div");
+      pre.appendChild(document.createTextNode(msg + (stack ? "\n" + stack : "")));
+      div.appendChild(pre);
+      (document.body || document.documentElement).appendChild(div);
+    } catch (e) {}
+  }
+
+  try {
+    window.addEventListener("error", function (ev) {
+      pzErrorOverlay(String(ev && ev.message || "Uncaught error"), ev && ev.error ? ev.error.stack : "");
+    });
+    window.addEventListener("unhandledrejection", function (ev) {
+      var r = ev && ev.reason;
+      pzErrorOverlay("Unhandled rejection: " + (r && r.message ? r.message : String(r)), r && r.stack ? r.stack : "");
+    });
+  } catch (e) {}
+
   var AD_HOST_RE = /(?:effectivecpmnetwork|highperformanceformat|profitablegatecpm|adsterra|monetag|quge5|senty\.com|magsrv|pl\d+\.\w+\.\w+\/|pagedistribution)/i;
 
   function isAdSrc(url) {
