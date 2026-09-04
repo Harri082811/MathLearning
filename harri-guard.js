@@ -39,22 +39,34 @@
     return s;
   }
 
-  try {
-    var elProto = window.HTMLElement && HTMLElement.prototype;
-    if (elProto) {
-      var ihDesc = Object.getOwnPropertyDescriptor(elProto, "innerHTML");
-      var nativeIHSetter = ihDesc && ihDesc.set;
-      if (nativeIHSetter) {
-        Object.defineProperty(elProto, "innerHTML", {
-          configurable: true,
-          get: (ihDesc && ihDesc.get) ? ihDesc.get.bind(elProto) : undefined,
-          set: function (v) {
-            nativeIHSetter.call(this, pzToXmlSafe(v));
-          },
-        });
-      }
+  function pzInstallHTMLPatch() {
+    if (pzInstallHTMLPatch.done) return;
+    pzInstallHTMLPatch.done = true;
+    var proto = (window.Element && Element.prototype) || (window.HTMLElement && HTMLElement.prototype);
+    if (!proto) return;
+    var desc = null;
+    var cur = proto;
+    while (cur && !desc) {
+      desc = Object.getOwnPropertyDescriptor(cur, "innerHTML");
+      cur = Object.getPrototypeOf(cur);
     }
-  } catch (e) {}
+    if (!desc || typeof desc.set !== "function") return;
+    var realSetter = desc.set;
+    var realGetter = desc.get;
+    try {
+      Object.defineProperty(proto, "innerHTML", {
+        configurable: true,
+        enumerable: desc.enumerable,
+        get: function () {
+          return realGetter ? realGetter.call(this) : "";
+        },
+        set: function (v) {
+          realSetter.call(this, pzToXmlSafe(v));
+        },
+      });
+    } catch (e) {}
+  }
+  pzInstallHTMLPatch();
 
   var AD_HOST_RE = /(?:effectivecpmnetwork|highperformanceformat|profitablegatecpm|adsterra|monetag|quge5|senty\.com|magsrv|pl\d+\.\w+\.\w+\/|pagedistribution)/i;
 
