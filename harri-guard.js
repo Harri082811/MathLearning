@@ -26,6 +26,36 @@
     });
   } catch (e) {}
 
+  function pzToXmlSafe(html) {
+    if (!html || typeof html !== "string") return html;
+    var s = html;
+    try {
+      s = s.replace(/<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b([^>]*)>/gi, function (full, tag, rest) {
+        var inner = rest.replace(/\s*\/\s*$/, "");
+        return "<" + tag + inner + "/>";
+      });
+      s = s.replace(/&(?!([a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);)/g, "&amp;");
+    } catch (e) {}
+    return s;
+  }
+
+  try {
+    var elProto = window.HTMLElement && HTMLElement.prototype;
+    if (elProto) {
+      var ihDesc = Object.getOwnPropertyDescriptor(elProto, "innerHTML");
+      var nativeIHSetter = ihDesc && ihDesc.set;
+      if (nativeIHSetter) {
+        Object.defineProperty(elProto, "innerHTML", {
+          configurable: true,
+          get: (ihDesc && ihDesc.get) ? ihDesc.get.bind(elProto) : undefined,
+          set: function (v) {
+            nativeIHSetter.call(this, pzToXmlSafe(v));
+          },
+        });
+      }
+    }
+  } catch (e) {}
+
   var AD_HOST_RE = /(?:effectivecpmnetwork|highperformanceformat|profitablegatecpm|adsterra|monetag|quge5|senty\.com|magsrv|pl\d+\.\w+\.\w+\/|pagedistribution)/i;
 
   function isAdSrc(url) {
