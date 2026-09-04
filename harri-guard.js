@@ -116,12 +116,53 @@
     } catch (e) {}
   });
 
+  var STORAGE_ORIGIN = "https://petezahgames.com";
+
+  function isRelativeStorage(src) {
+    if (!src || typeof src !== "string") return false;
+    src = src.trim();
+    return src.charAt(0) === "/" && src.toLowerCase().indexOf("/storage/") !== -1;
+  }
+
+  function fixImg(img) {
+    try {
+      if (!img || img.getAttribute("data-harri-ok")) return;
+      var src = (img.getAttribute("src") || "").trim();
+      var first = src.charAt(0);
+      if (isRelativeStorage(src)) {
+        img.setAttribute("src", STORAGE_ORIGIN + src);
+        var ss = img.getAttribute("srcset") || "";
+        if (ss) img.setAttribute("srcset", ss.split(",").map(function (part) {
+          var p = part.trim().split(/\s+/)[0] || "";
+          return (isRelativeStorage(p) ? STORAGE_ORIGIN + p : p) + (part.trim().match(/\s+\d+[wx]$/i) ? " " + part.trim().match(/\s+\d+[wx]$/i)[0].trim() : "");
+        }).join(", "));
+        img.setAttribute("data-harri-ok", "1");
+      }
+    } catch (e) {}
+  }
+
+  function fixAllImages() {
+    try {
+      var imgs = document.querySelectorAll("img");
+      for (var i = 0; i < imgs.length; i++) fixImg(imgs[i]);
+    } catch (e) {}
+  }
+
+  if (typeof MutationObserver !== "undefined") {
+    try {
+      var imgObs = new MutationObserver(function () { fixAllImages(); });
+      imgObs.observe(document.documentElement || document, { childList: true, subtree: true });
+    } catch (e) {}
+  }
+  fixAllImages();
+
   function fallbackIcon(img) {
     try {
+      var src = (img.getAttribute("src") || "").trim();
+      if (isRelativeStorage(src)) { fixImg(img); return; }
       var check = img.getAttribute("data-harri-fb");
       if (check) return;
       img.setAttribute("data-harri-fb", "1");
-      var src = img.getAttribute("src") || "";
       var cur = "";
       try { cur = img.currentSrc || ""; } catch (e) {}
       var combined = (src + " " + cur).toLowerCase();
