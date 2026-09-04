@@ -155,6 +155,54 @@
     };
   }
 
+  function isAdRequest(input) {
+    if (!input) return false;
+    var u = String(input);
+    return u.indexOf("http") === 0 || u.indexOf("//") === 0 ? isAdSrc(u) : false;
+  }
+
+  try {
+    var nativeFetch = window.fetch && window.fetch.bind ? window.fetch.bind(window) : window.fetch;
+    if (typeof nativeFetch === "function") {
+      window.fetch = function (input, init) {
+        if (isAdRequest(input)) {
+          return Promise.reject(new TypeError("blocked ad request: " + input));
+        }
+        return nativeFetch(input, init);
+      };
+    }
+  } catch (e) {}
+
+  try {
+    var xhrProto = window.XMLHttpRequest && XMLHttpRequest.prototype;
+    if (xhrProto) {
+      var nativeXhrOpen = xhrProto.open;
+      if (typeof nativeXhrOpen === "function") {
+        var pzWeak = null;
+        try { pzWeak = typeof WeakSet === "function" ? new WeakSet() : null; } catch (e) {}
+        xhrProto.open = function (method, url) {
+          try {
+            if (isAdRequest(url)) {
+              if (pzWeak) pzWeak.add(this);
+              this._pzAdBlocked = true;
+            }
+          } catch (e) {}
+          return nativeXhrOpen.apply(this, arguments);
+        };
+        var nativeXhrSend = xhrProto.send;
+        xhrProto.send = function (body) {
+          try {
+            if (this._pzAdBlocked || (pzWeak && pzWeak.has(this))) {
+              if (typeof this.abort === "function") { try { this.abort(); } catch (e) {} }
+              return;
+            }
+          } catch (e) {}
+          return nativeXhrSend.apply(this, arguments);
+        };
+      }
+    }
+  } catch (e) {}
+
   var nativeAssign = window.location && window.location.assign;
   var nativeReplace = window.location && window.location.replace;
   if (nativeAssign) {
