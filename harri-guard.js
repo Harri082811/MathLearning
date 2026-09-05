@@ -161,12 +161,29 @@
     return u.indexOf("http") === 0 || u.indexOf("//") === 0 ? isAdSrc(u) : false;
   }
 
+  var GAMES_RELAY = "https://silent-wave-54b1.harriwalk0.workers.dev/games";
+
+  function isGamesCatalog(input) {
+    if (!input) return false;
+    return String(input).indexOf("/storage/data/collection.json") !== -1;
+  }
+
   try {
     var nativeFetch = window.fetch && window.fetch.bind ? window.fetch.bind(window) : window.fetch;
     if (typeof nativeFetch === "function") {
       window.fetch = function (input, init) {
         if (isAdRequest(input)) {
           return Promise.reject(new TypeError("blocked ad request: " + input));
+        }
+        if (isGamesCatalog(input)) {
+          var opts = {};
+          if (init) {
+            try {
+              if (init.signal && init.signal.aborted) return Promise.reject(new DOMException("Aborted", "AbortError"));
+              opts.signal = init.signal;
+            } catch (e) {}
+          }
+          return nativeFetch(GAMES_RELAY, opts);
         }
         return nativeFetch(input, init);
       };
@@ -271,6 +288,23 @@
   }
   fixAllImages();
 
+  var PZ_REPO_ICONS = {
+    "/storage/images/harriai.png": "icons/apps/harriai.svg",
+    "/storage/images/harriubg-firefox.webp": "icons/apps/vm.svg",
+    "/storage/images/harriubg-movies.png": "icons/apps/movies.svg",
+    "/storage/images/harriubgmusic-removebg-preview.png": "icons/apps/music.svg",
+    "/storage/images/vortex-harriubg.webp": "icons/apps/vortex.svg"
+  };
+
+  function repoIconFor(src) {
+    if (!src) return "";
+    var s = String(src).toLowerCase();
+    for (var key in PZ_REPO_ICONS) {
+      if (s.indexOf(key) !== -1) return PZ_REPO_ICONS[key];
+    }
+    return "";
+  }
+
   function fallbackIcon(img) {
     try {
       var src = (img.getAttribute("src") || "").trim();
@@ -281,6 +315,12 @@
       var cur = "";
       try { cur = img.currentSrc || ""; } catch (e) {}
       var combined = (src + " " + cur).toLowerCase();
+      var rep = repoIconFor(combined);
+      if (rep) {
+        img.setAttribute("src", rep);
+        img.setAttribute("srcset", "");
+        return;
+      }
       if (combined.indexOf("storage/") !== -1) {
         img.setAttribute("src", "placeholder.svg");
         img.setAttribute("srcset", "");

@@ -35,7 +35,7 @@
       : originalCreateElement(tagName, options);
   };
 })();
-var g=document.createElement('script');g.src="harri-guard.js?v=1.1.5";document.body.appendChild(g);
+var g=document.createElement('script');g.src="harri-guard.js?v=1.1.6";document.body.appendChild(g);
 var l=document.createElement('link');l.rel='stylesheet';l.crossOrigin='';l.href="./assets/index-Bchvr6TY.css?v=03-09-2026";document.head.appendChild(l);
 var s=document.createElement('script');s.type='module';s.crossOrigin='';s.src="./assets/index-DgUiuA8a.js?v=03-09-2026";document.body.appendChild(s);
 var m=document.createElement('script');m.src="m4thx/index.js?v=03-09-2026";document.body.appendChild(m);
