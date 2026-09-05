@@ -68,7 +68,7 @@
   }
   pzInstallHTMLPatch();
 
-  var AD_HOST_RE = /(?:effectivecpmnetwork|highperformanceformat|profitablegatecpm|adsterra|monetag|quge5|senty\.com|magsrv|pl\d+\.\w+\.\w+\/|pagedistribution)/i;
+  var AD_HOST_RE = /(?:effectivecpmnetwork|highperformanceformat|profitablegatecpm|adsterra|monetag|quge5|senty\.com|magsrv|pl\d+\.\w+\.\w+\/|pagedistribution|coinknowledge\.net)/i;
 
   function isAdSrc(url) {
     if (!url || typeof url !== "string" || !url) return false;
@@ -104,6 +104,14 @@
   blockEl("script");
   blockEl("iframe");
 
+  function isAdTag(n) {
+    try {
+      var title = (n.getAttribute && n.getAttribute("title") || "").toLowerCase();
+      if (title === "sponsored content" || title === "advertisement") return true;
+    } catch (e) {}
+    return false;
+  }
+
   var obs = null;
   function removeAds() {
     try {
@@ -114,7 +122,7 @@
         var src = n.getAttribute && (n.getAttribute("src") || "");
         var id = (n.id || "").toLowerCase();
         var marker = n.dataset && n.dataset.harriAdBlocked;
-        if (marker || isAdSrc(src) || id.indexOf("pz-adsterra") === 0 || id.indexOf("pz-monetag") === 0 || id === "pz-video-ad-root") {
+        if (marker || isAdSrc(src) || isAdTag(n) || id.indexOf("pz-adsterra") === 0 || id.indexOf("pz-monetag") === 0 || id === "pz-video-ad-root") {
           try { n.remove(); } catch (e) {}
         }
       });
@@ -134,7 +142,7 @@
             var tag = (n.tagName || "").toLowerCase();
             var src = n.getAttribute && (n.getAttribute("src") || "");
             var id = (n.id || "").toLowerCase();
-            if ((tag === "script" || tag === "iframe") && (isAdSrc(src) || (n.dataset && n.dataset.harriAdBlocked))) {
+            if ((tag === "script" || tag === "iframe") && (isAdSrc(src) || isAdTag(n) || (n.dataset && n.dataset.harriAdBlocked))) {
               try { n.remove(); changed = true; } catch (e) {}
             } else if (tag === "div" && (id.indexOf("pz-adsterra") === 0 || id.indexOf("pz-monetag") === 0 || id === "pz-video-ad-root")) {
               try { n.remove(); changed = true; } catch (e) {}
